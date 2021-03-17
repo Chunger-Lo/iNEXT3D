@@ -109,18 +109,24 @@
 #' 
 iNEXT3D <- function(data, class, q = c(0,1,2), datatype = "abundance", size = NULL, endpoint = NULL, knots = 40, conf = 0.95, nboot = 50, 
                   tree = NULL, nT = NULL, reftime=NULL, PDtype = 'PD', distM, threshold = NULL) {
-  if ( !(class %in% c('TD', 'PD', 'FD', 'AUC')) ) 
+  if ( sum(!(class %in% c('TD', 'PD', 'FD', 'AUC')))>0 ) 
     stop("Please select one of below class: 'TD', 'PD', 'FD', 'AUC'", call. = FALSE)
   
-  if (class == 'TD') {
-    out = iNEXTTD(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot)
-  } else if (class == 'PD') {
-    out = iNEXTPD(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot, tree = tree, reftime = reftime, type = PDtype, nT = nT)
-  } else if (class == 'FD') {
-    out = iNEXTFD(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot, distM = distM, threshold = threshold)
-  } else if (class == 'AUC') {
-    out = iNEXTAUC(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot, distM = distM)
-  }
+  order_class = class[setdiff(match(c("TD", "PD", "FD", "AUC"), class), NA)]
+  out = lapply(order_class, function(class){
+    if (class == 'TD') {
+      out = iNEXTTD(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot)
+    } else if (class == 'PD') {
+      out = iNEXTPD(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot, tree = tree, reftime = reftime, type = PDtype, nT = nT)
+    } else if (class == 'FD') {
+      out = iNEXTFD(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot, distM = distM, threshold = threshold)
+    } else if (class == 'AUC') {
+      out = iNEXTAUC(data, q = q, datatype = datatype, size = size, endpoint = endpoint, knots = knots, conf = conf, nboot = nboot, distM = distM)
+    }
+    return(out)
+  })
+  names(out) = order_class
+
   
   return(out)
 }
@@ -215,18 +221,24 @@ iNEXT3D <- function(data, class, q = c(0,1,2), datatype = "abundance", size = NU
 estimate3D <- function (data, class, q = c(0,1,2), datatype = "abundance", base = "coverage", level = NULL, nboot=50,
                        conf = 0.95, tree, nT, reftime = NULL, PDtype = 'PD', distM, threshold = NULL) 
 {
-  if ( !(class %in% c('TD', 'PD', 'FD', 'AUC')) ) 
+  if ( sum(!(class %in% c('TD', 'PD', 'FD', 'AUC')))>0 ) 
     stop("Please select one of below class: 'TD', 'PD', 'FD', 'AUC'", call. = FALSE)
   
-  if (class == 'TD') {
-    out = estimateTD(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level)
-  } else if (class == 'PD') {
-    out = estimatePD(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level, tree = tree, reftime = reftime, type = PDtype, nT = nT)
-  } else if (class == 'FD') {
-    out = estimateFD(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level, distM = distM, threshold = threshold)
-  } else if (class == 'AUC') {
-    out = estimateAUC(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level, distM = distM, tau = NULL)
-  }
+  
+  order_class = class[setdiff(match(c("TD", "PD", "FD", "AUC"), class), NA)]
+  out = lapply(order_class, function(class){
+    if (class == 'TD') {
+      out = estimateTD(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level)
+    } else if (class == 'PD') {
+      out = estimatePD(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level, tree = tree, reftime = reftime, type = PDtype, nT = nT)
+    } else if (class == 'FD') {
+      out = estimateFD(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level, distM = distM, threshold = threshold)
+    } else if (class == 'AUC') {
+      out = estimateAUC(data, q = q, datatype = datatype, base = base, nboot = nboot, conf = conf, level = level, distM = distM, tau = NULL)
+    }
+    return(out)
+  })
+  names(out) = order_class
   
   return(out)
 }
@@ -315,19 +327,25 @@ estimate3D <- function (data, class, q = c(0,1,2), datatype = "abundance", base 
 #' @export
 Asy3D <- function(data, class = 'TD', q = seq(0, 2, 0.2), datatype = "abundance", nboot = 50, conf = 0.95, 
                  tree, nT, reftime = NULL, PDtype = 'PD', distM, threshold = NULL) {
-  if ( !(class %in% c('TD', 'PD', 'FD', 'AUC')) ) 
+  if ( sum(!(class %in% c('TD', 'PD', 'FD', 'AUC')))>0 ) 
     stop("Please select one of below class: 'TD', 'PD', 'FD', 'AUC'", call. = FALSE)
   
-  if (class == 'TD') {
-    out = AsyTD(data, q = q, datatype = datatype, nboot = nboot, conf = conf)
-  } else if (class == 'PD') {
-    out = AsyPD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, tree = tree, reftime = reftime, type = PDtype, nT = nT)
-  } else if (class == 'FD') {
-    out = AsyFD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, threshold = threshold)
-  } else if (class == 'AUC') {
-    out = AsyAUC(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, tau = NULL)
-  }
   
+  order_class = class[setdiff(match(c("TD", "PD", "FD", "AUC"), class), NA)]
+  out = lapply(order_class, function(class){
+    if (class == 'TD') {
+      out = AsyTD(data, q = q, datatype = datatype, nboot = nboot, conf = conf)
+    } else if (class == 'PD') {
+      out = AsyPD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, tree = tree, reftime = reftime, type = PDtype, nT = nT)
+    } else if (class == 'FD') {
+      out = AsyFD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, threshold = threshold)
+    } else if (class == 'AUC') {
+      out = AsyAUC(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, tau = NULL)
+    }
+    return(out)
+  })
+  names(out) = order_class
+
   return(out)
 }
 
@@ -417,19 +435,24 @@ Asy3D <- function(data, class = 'TD', q = seq(0, 2, 0.2), datatype = "abundance"
 #' @export
 Obs3D <- function(data, class = 'TD', q = seq(0, 2, 0.2), datatype = "abundance", nboot = 50, conf = 0.95,
                  tree, nT, reftime = NULL, PDtype = 'PD', distM, threshold = NULL) {
-  if ( !(class %in% c('TD', 'PD', 'FD', 'AUC')) ) 
+  if ( sum(!(class %in% c('TD', 'PD', 'FD', 'AUC')))>0 ) 
     stop("Please select one of below class: 'TD', 'PD', 'FD', 'AUC'", call. = FALSE)
   
-  if (class == 'TD') {
-    out = ObsTD(data, q = q, datatype = datatype, nboot = nboot, conf = conf)
-  } else if (class == 'PD') {
-    out = ObsPD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, tree = tree, reftime = reftime, type = PDtype, nT = nT)
-  } else if (class == 'FD') {
-    out = ObsFD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, threshold = threshold)
-  } else if (class == 'AUC') {
-    out = ObsAUC(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, tau = NULL)
-  }
   
+  order_class = class[setdiff(match(c("TD", "PD", "FD", "AUC"), class), NA)]
+  out = lapply(order_class, function(class){
+    if (class == 'TD') {
+      out = ObsTD(data, q = q, datatype = datatype, nboot = nboot, conf = conf)
+    } else if (class == 'PD') {
+      out = ObsFD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, threshold = threshold)
+    } else if (class == 'FD') {
+      out = ObsFD(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, threshold = threshold)
+    } else if (class == 'AUC') {
+      out = ObsAUC(data, q = q, datatype = datatype, nboot = nboot, conf = conf, distM = distM, tau = NULL)
+    }
+    return(out)
+  })
+  names(out) = order_class
   return(out)
 }
 
@@ -516,6 +539,7 @@ Obs3D <- function(data, class = 'TD', q = seq(0, 2, 0.2), datatype = "abundance"
 #' 
 #' 
 ggiNEXT3D = function(outcome, type = 1:3, facet.var = "Assemblage", color.var = "Order.q"){
+  
   if (sum(names(outcome) %in% c('DataInfo', 'iNextEst', 'AsyEst')) == 3) {
     class = 'TD'
     plottable = outcome$iNextEst
