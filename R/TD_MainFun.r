@@ -173,7 +173,7 @@ iNEXTTD <- function(data, q=0, datatype="abundance", size=NULL, endpoint=NULL, k
     unconditional_var <- TRUE
     if(datatype == "abundance"){
       if(sum(x)==0) stop("Zero abundance counts in one or more sample sites")
-      out <- iNEXT.Ind(Spec=x, q=q, m=size, endpoint=ifelse(is.null(endpoint), 2*sum(x), endpoint), knots=knots, se=se, nboot=nboot, conf=conf,unconditional_var)
+      out <- iNEXT.Ind(Spec=x, q=q, m=size, endpoint=ifelse(is.null(endpoint), 2*sum(x), endpoint), knots=knots+2, se=se, nboot=nboot, conf=conf,unconditional_var)
     }
     if(datatype == "incidence"){
       t <- x[1]
@@ -183,7 +183,7 @@ iNEXTTD <- function(data, q=0, datatype="abundance", size=NULL, endpoint=NULL, k
       }
       if(sum(x)==0) stop("Zero incidence frequencies in one or more sample sites")
       
-      out <- iNEXT.Sam(Spec=x, q=q, t=size, endpoint=ifelse(is.null(endpoint), 2*max(x), endpoint), knots=knots, se=se, nboot=nboot, conf=conf)  
+      out <- iNEXT.Sam(Spec=x, q=q, t=size, endpoint=ifelse(is.null(endpoint), 2*max(x), endpoint), knots=knots+2, se=se, nboot=nboot, conf=conf)  
     }
     if(unconditional_var){
       out <- lapply(out, function(out_) cbind(Assemblage = assem_name, out_))
@@ -269,11 +269,13 @@ iNEXTTD <- function(data, q=0, datatype="abundance", size=NULL, endpoint=NULL, k
   }
   out$size_based$Assemblage <- as.character(out$size_based$Assemblage)
   out$coverage_based$Assemblage <- as.character(out$coverage_based$Assemblage)
+  out$size_based$Type <- "TD"
+  out$coverage_based$Type <- "TD"
   info <- DataInfo(data, datatype)
   
   
-  z <- list("DataInfo"=info, "iNextEst"=out, "AsyEst"=index)
-  class(z) <- c("iNEXT")
+  z <- list("TDInfo"=data.frame(info), "TDiNextEst"=(out), "TDAsyEst"=data.frame(index))
+  #class(z) <- c("iNEXT")
   return(z)
   }
 

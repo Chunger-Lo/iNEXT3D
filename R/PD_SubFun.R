@@ -1244,11 +1244,11 @@ TD.Tprofile <- function(x,q,datatype="abundance",nboot=50,conf=0.95,cal,reft_tax
           warning("Insufficient data to compute bootstrap s.e.")
         }else{		
           se <- apply(matrix(apply(Abun.Mat, 2, function(yb) Diversity_profile_MLE.inc(yb,q))*reft_taxo[l],
-                         nrow = length(q)), 1, sd, na.rm=TRUE)
+                             nrow = length(q)), 1, sd, na.rm=TRUE)
         }
         se
       }) %>% matrix(.,nrow = length(q),ncol = length(reft_taxo)) %>% t %>% c
-    
+      
     }else{ses = rep(NA,length(reft_taxo)*length(q))}
   }
   output <- cbind(dq,dq-qtile*ses,dq+qtile*ses)
@@ -1297,5 +1297,4 @@ TD.q.est <- function(x,q,datatype="abundance",nboot=50,conf=0.95,cal,reft_taxo){
   }
   output <- cbind(dq,dq-qtile*ses,dq+qtile*ses)
   output
-}
-
+} 

@@ -3,7 +3,7 @@ Type: Package
 Title: Interpolation and Extrapolation for Species Diversity in three classes
 Version: 0.0.1
 Author: K. S. Hu and Anne Chao
-Description: 
+Description: Interpolation and Extrapolation for Species Diversity in three classes
 License: GPL (>= 3)
 URL: http://chao.stat.nthu.edu.tw/wordpress/software_download/
 Maintainer: K. S. Hu <river19951224@gmail.com>
@@ -14,7 +14,11 @@ Imports:
     graphics,
     ggplot2,
     reshape2,
-    Rcpp
+    Rcpp,
+    dplyr,
+    ape,
+    phyclust,
+    tidytree
 BugReports: https://github.com/KaiHsiangHu/iNEXT3D/issues
 LazyLoad: yes
 RoxygenNote: 7.1.1

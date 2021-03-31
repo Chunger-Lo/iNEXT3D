@@ -12,7 +12,7 @@ FD_mle <- function(ai_vi, q){
       }
     })
   })
-
+  
   matrix(out,nrow = length(q),ncol = ncol(ai_vi$ai))
 }
 
@@ -203,10 +203,10 @@ AUCtable_mle <- function(datalist, dij, q = c(0,1,2), tau=NULL, datatype,
       ses <- tibble(Order.q = rep(q,length(datalist)), se = NA, Assemblage = rep(sites,each = length(q)))
     }
   }
- 
+  
   AUC <- left_join(x = AUC, y = ses, by = c('Assemblage','Order.q')) %>% mutate(qAUC.LCL = qAUC - se * qtile,
-                                                                                 qAUC.UCL = qAUC + se * qtile,
-                                                                                 Method = "Empirical") %>% 
+                                                                                qAUC.UCL = qAUC + se * qtile,
+                                                                                Method = "Empirical") %>% 
     select(-se)
   AUC$qAUC.LCL[AUC$qAUC.LCL<0] <- 0
   AUC = AUC %>% select(c('Order.q', 'qAUC', 'qAUC.LCL', 'qAUC.UCL', 'Assemblage', 'Method'))
@@ -569,7 +569,7 @@ iNextFD = function(datalist, dij, q = c(0,1,2), datatype, tau, nboot, conf = 0.9
       n=sum(x)
       data_aivi <- data_transform(data = x,dij = dij,tau = tau,datatype = datatype)
       qFDm <- FD.m.est(ai_vi = data_aivi,m = m[[i]],q = q,nT = n) %>%
-         as.numeric()
+        as.numeric()
       covm = CoverageFD(x, datatype, m[[i]])
       if(nboot>1){
         BT <- EstiBootComm.Func(data = x,distance = dij,datatype = datatype)
@@ -598,9 +598,9 @@ iNextFD = function(datalist, dij, q = c(0,1,2), datatype, tau, nboot, conf = 0.9
              Order.q=orderq, qFD=qFDm, qFD.LCL=qFDm-qtile*ses_fd, qFD.UCL=qFDm+qtile*ses_fd,
              SC=covm, SC.LCL=covm-qtile*ses_cov, SC.UCL=covm+qtile*ses_cov,
              threshold = threshold) %>% 
-      arrange(threshold, Order.q)
+        arrange(threshold, Order.q)
     }) %>% do.call(rbind, .)
-   
+    
   }else if(datatype=="incidence_freq"){
     out <- lapply(1:length(datalist), function(i){
       x <- datalist[[i]]
@@ -645,7 +645,7 @@ iNextFD = function(datalist, dij, q = c(0,1,2), datatype, tau, nboot, conf = 0.9
 
 # AUCtable_iNextFD -------------------------------------------------------------------
 AUCtable_iNextFD <- function(datalist, dij, q = c(0,1,2), datatype, tau=NULL,
-                         nboot=0, conf=0.95, m) {
+                             nboot=0, conf=0.95, m) {
   qtile <- qnorm(1-(1-conf)/2)
   sites <- names(datalist)
   # dmin <- min(dij[dij>0])
@@ -814,7 +814,7 @@ invChatFD_inc <- function(ai_vi, data_, q, Cs, tau){
 # invChatFD -------------------------------------------------------------------
 invChatFD <- function(datalist, dij, q, datatype, level, nboot, conf = 0.95, tau){
   qtile <- qnorm(1-(1-conf)/2)
-
+  
   if(datatype=='abundance'){
     out <- lapply(datalist,function(x_){
       data_aivi <- data_transform(data = x_,dij = dij,tau = tau,datatype = datatype)
@@ -927,4 +927,3 @@ AUCtable_invFD <- function(datalist, dij, q = c(0,1,2), datatype, level, nboot =
   # AUC$SC.LCL[AUC$SC.LCL<0] <- 0
   AUC
 }
-
